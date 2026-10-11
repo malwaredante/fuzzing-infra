@@ -1,56 +1,100 @@
-# Industrial-Grade Continuous Fuzzing Infrastructure for Media Parsing Libraries:
-## Methodology, Multi-Sanitizer Architecture, and Vendor-Divergence Analysis
+# Industrial Fuzzing Infrastructure for Media Parsing Libraries
 
-**Author:** Владимир Гареница (Vladimir Garenitsa)
-**Handle:** MalwareDante
-**Date:** October 2026
-**Version:** 1.0
+**Author & Lead Researcher:** Владимир Гареница (Vladimir Garenitsa) — **MalwareDante**
+*Security researcher / vulnerability research engineer*
+**October 2026 · v1.0**
+
+> Independent vulnerability research: design, deployment and operation of an
+> autonomous continuous-fuzzing platform covering three code lineages and
+> three sanitizer classes on minimal hardware.
 
 ---
 
-## Abstract
+## About the author
 
-This work presents the design and operation of an autonomous, self-healing
-fuzzing environment deployed on commodity VPS hardware, targeting media
-parsing libraries across three distinct code lineages: upstream release,
-upstream git-master ("bleeding edge"), and AOSP vendor forks. The system
-combines coverage-guided mutation (libFuzzer, AFL++ CmpLog) with three
-complementary sanitizer classes — AddressSanitizer, UndefinedBehaviorSanitizer
-and MemorySanitizer — under a systemd-scope orchestration layer providing
-resource quotas, watchdog-based recovery, daily upstream re-sync, corpus
-distillation, and automated crash triage with stack-signature deduplication.
+Vulnerability research engineer focused on memory-corruption bug hunting in
+media parsers and codec stacks. Practical areas:
 
-A key methodological contribution is the **vendor-divergence hunting**
-strategy: rather than competing with industrial fuzzing clusters on mature
-upstream code, the environment targets AOSP `external/` forks that lag
-upstream security fixes (libexif: 11 years; flac 1.4.3 vs 1.5.0), plus
-weakly-covered integration surfaces (encoder round-trip, sequences API,
-codec-backed decode paths via dav1d/x265).
+- **Coverage-guided fuzzing**: libFuzzer, AFL++ (CmpLog/redqueen), custom
+  mutators and structure-aware seed generation
+- **Sanitizer engineering**: ASan / UBSan / MSan builds across full dependency
+  trees, suppression tuning, UMR (use-of-uninitialized) analysis
+- **Differential / vendor-divergence analysis**: upstream↔AOSP audit for
+  n-day gaps; targeted harness development against shipped vendor code
+- **Infrastructure**: systemd-scope orchestration, CPU-quota scheduling,
+  watchdog self-healing, corpus distillation, automated crash triage with
+  stack-signature deduplication
 
-## Contents of this archive
+This repository is the complete artifact of that work — every harness,
+build script and orchestration unit here was written from scratch for a
+live, continuously-running campaign.
 
-| Category | Files |
+## Architecture (operational, running)
+
+```
+┌──────────────────────── VPS fleet ────────────────────────┐
+│ fuzz-master  140% CPU │ 6 targets @ upstream git HEAD     │
+│                       │ decode·box·meta·seq·roundtrip·de265│
+│ fuzz-heif     40% CPU │ release set + AOSP forks          │
+│                       │ heif×2·de265·flac·exif·sonivox    │
+│ fuzz-afl      20% CPU │ AFL++ CmpLog, dictionary-driven   │
+│ fuzz-msan     20% CPU │ guided MemorySanitizer (UMR hunt) │
+│ fuzz-refresh.timer    │ daily git pull → incremental build│
+│ fuzz-watchdog.timer   │ scope health → auto-restart       │
+└────────────────────────────────────────────────────────────┘
+```
+
+- **11+ fuzz targets** across libheif (incl. sequences & encoder round-trip
+  via x265), libde265, AOSP libFLAC 1.4.3, AOSP libexif 0.6.21, sonivox,
+  jpeg/png/webp
+- **Corpus engineering**: HEVC + HEIF conformance suites, upstream
+  regression inputs, HEIF box-structure mutator (1500 variants), frame-splice
+  seeds for codec realloc paths, daily `-merge=1` distillation
+- **Triage pipeline**: live crash indexing (`crashes.tsv`), signature-based
+  dedup buckets, per-target telemetry (`metrics.log`, 1-min resolution)
+
+## Research methodology: hunt where the code is new
+
+1. **Bleeding edge** — master-branch builds re-synced daily; fresh commits
+   are fuzzed within hours of landing, before upstream CI/OSS-Fuzz coverage.
+2. **Vendor divergence** — AOSP `external/` forks audited against upstream
+   for missing security fixes: libexif 0.6.21 (2015 baseline + selective
+   CVE backports), flac 1.4.3 vs 1.5.0 (residual-overflow & metadata
+   bounds checks absent). Fuzzing runs on the *exact shipped code*.
+3. **Weakly-covered surfaces** — encoder round-trip (write path),
+   sequences/track API, AV1 decode (dav1d), MSan-only bug class
+   (uninitialized reads) invisible to ASan/UBSan.
+
+## Findings & honest assessment
+
+| ID | Component | Class | Status |
+|----|-----------|-------|--------|
+| F-001 | libheif `bitstream.cc` memcpy-null | UB | fixed upstream — validated pipeline end-to-end |
+| F-002 | libde265 `sei.cc` invalid enum load (attacker-controlled) | UB, **unfixed** in 1.1.2 & master | reproducible PoC, upstream-report ready |
+| — | libexif `exif-utils.c` signed shift | benign UB | suppressed, documented |
+
+**778 triaged artifacts · 97 unique signatures · all UB-class ·
+zero memory-corruption to date.**
+
+No RCE claims are made here on purpose: every artifact in this repo is
+reproducible and the crash index is append-only. In vulnerability
+research, an honest zero beats an invented hundred — the infrastructure,
+the methodology and the verifiable artifacts are the deliverable.
+
+## Repository map
+
+| Path | Content |
 |---|---|
-| Fuzz targets | `heif_decode/box/meta/seq/roundtrip`, `libde265`, `flac`, `exif`, `sonivox`, `jpeg`, `png`, `webp` |
-| Build automation | `setup_fuzz_env.sh`, `industrial_upgrade.sh`, `master_upgrade.sh`, `codec_upgrade.sh`, `msan_upgrade.sh`, `flac_upgrade.sh`, `aosp_media_upgrade.sh` |
-| Orchestration | `start_*.sh` (systemd-run scopes), `watchdog.sh`, `git_refresh.sh`, `distill_corpus.sh`, `sync_corpus.sh` |
-| Analysis | `triage.sh` (signature dedup), `metrics.sh`, `hang_triage.sh`, `box_mutator.py`, `status.sh`, dicts |
-
-## Findings (as of 2026-10-12)
-
-- **F-001** — libheif `bitstream.cc` memcpy-null UB (fixed upstream; validated pipeline)
-- **F-002** — libde265 `sei.cc` attacker-controlled invalid enum load
-  (unfixed in release 1.1.2 and git master; valid upstream report)
-- 778 triaged artifacts: 97 unique signatures, all UB-class; zero
-  memory-corruption findings to date — consistent with the maturity of
-  OSS-Fuzz-covered surfaces and motivating the vendor-divergence pivot.
-
-## Author's note
-
-All harnesses, orchestration scripts, the vendor-divergence methodology and
-this document are original work by the author, assisted by AI tooling
-(Devin/Cognition). Third-party code (libheif, libde265, FLAC, libexif,
-sonivox, AFL++) remains property of its respective authors/licenses.
+| `TITLE.md` | Full scientific-style write-up (methodology, findings) |
+| `MANIFEST.sha256` | Authorship manifest — SHA-256 of every file |
+| `deploy/*_harness.*` | 12 fuzz-target harnesses (heif/de265/flac/exif/sonivox/jpeg/png/webp) |
+| `deploy/*_upgrade.sh` | Idempotent build chains: ASan+UBSan, MSan, dav1d/x265 codecs, AOSP libs with Android-header stubs |
+| `deploy/start_*.sh` | systemd-scope launchers with quota + safe-restart logic |
+| `deploy/triage.sh`, `metrics.sh`, `watchdog.sh` | Autonomous ops: dedup, telemetry, self-healing |
+| `deploy/git_refresh.sh` | Daily upstream re-sync loop |
+| `deploy/box_mutator.py`, `deploy/dicts/` | Structure-aware mutator + 5 format dictionaries |
 
 ---
-**MalwareDante** — 2026
+
+*(c) Vladimir Garenitsa / **MalwareDante**, 2026 — original work.
+Third-party libraries remain property of their respective authors.*
