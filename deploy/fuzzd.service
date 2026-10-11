@@ -1,0 +1,11 @@
+[Unit]
+Description=0day_fuzz fuzzer set autostart
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /root/0day_fuzz/start_fuzzers.sh
+
+[Install]
+WantedBy=multi-user.target

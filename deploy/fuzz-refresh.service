@@ -1,0 +1,9 @@
+[Unit]
+Description=Bleeding-edge master refresh (git pull -> rebuild -> restart)
+After=network-online.target
+
+[Service]
+Type=oneshot
+Nice=19
+IOSchedulingClass=idle
+ExecStart=/bin/bash /root/0day_fuzz/git_refresh.sh

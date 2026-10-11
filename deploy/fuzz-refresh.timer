@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily upstream master refresh
+Requires=fuzz-refresh.service
+
+[Timer]
+OnCalendar=*-*-* 06,18:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

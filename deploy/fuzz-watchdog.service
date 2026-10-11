@@ -1,0 +1,7 @@
+[Unit]
+Description=0day_fuzz watchdog tick
+
+[Service]
+Type=oneshot
+KillMode=process
+ExecStart=/bin/bash /root/0day_fuzz/watchdog.sh
