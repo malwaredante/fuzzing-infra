@@ -50,9 +50,10 @@ A few words on the platform itself, since that's honestly the thing I'm
 proudest of. It's 12 libFuzzer targets plus an AFL++ CmpLog instance plus the
 MSan scope, all packed into `systemd-run` cgroups with CPU quotas so they can
 share two cores without starving each other. A systemd timer pulls upstream
-master every day, does an incremental rebuild, and relaunches — so commits
-that landed in libheif this morning get fuzzed tonight, long before OSS-Fuzz's
-schedule touches them. Crash triage is automatic (stack-signature dedup into
+master every day, does an incremental rebuild, and relaunches — so code that
+landed in libheif this morning is already under the fuzzers tonight, and
+regressions surface within hours of a commit, not weeks. Crash triage is
+automatic (stack-signature dedup into
 an append-only index), telemetry runs every minute, and a watchdog restarts
 whatever dies. I check in twice a day over coffee. The fleet runs itself.
 
