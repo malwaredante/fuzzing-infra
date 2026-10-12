@@ -1,12 +1,15 @@
 # Vladimir Garenitsa
 ### `MalwareDante` — vulnerability research engineer
 
-Independent researcher. The work below ran privately for a while —
-as of October 2026 part of it is public: the platform, the methodology,
-the findings I've chosen to show.
+I don't do origin stories in READMEs. What I did before going public is a
+conversation, not a landing page — ask me directly and you'll get a straight
+answer. What I'll say here: the work below ran privately, on my own
+infrastructure, on my own time — and as of October 2026, part of it is
+public. The platform, the methodology, the findings I've chosen to show.
 
-What you see here is the floor, not the ceiling. The scoring model, the
-mutator internals and the unannounced part of the queue stay with me.
+What you see is the floor, not the ceiling. The scoring model, the mutator
+internals, and the unannounced part of the queue stay with me — that's not
+mystique, that's pricing.
 
 **Rule:** no claim without an artifact. Everything stated reproduces.
 
@@ -51,7 +54,7 @@ Queued for divergence analysis: `external/libpng` · `external/jpeg-turbo` ·
 
 *One report public. The index holds more — the rest is timing.*
 
-### Writing
+### Writing & interviews
 
 - [Android's `external/` libraries: hunting n-days in code that upstream
   already fixed](https://dev.to/malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-159l) — dev.to ·
@@ -68,6 +71,7 @@ AOSP build internals · Git
 ---
 
 *Open to vulnerability research / product security roles — remote.
-The repo is the audition, not the inventory. Hire me and the unpublished
-parts come with it. Available for interviews — github issues or
-malwaredante@proton.me.*
+This page is the audition, not the inventory. The unpublished parts —
+the queue, the thresholds, the second metric — come with the hire, not
+with the browse. For interviews, collaborations, or the direct version of
+"what else do you have": malwaredante@proton.me or a GitHub issue.*
