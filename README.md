@@ -8,6 +8,11 @@ single engineer: 12 instrumented targets, 3 sanitizer classes, 4 orchestrated
 compute scopes, daily upstream re-sync — running unattended on commodity
 VPS hardware.
 
+**The story behind it:**
+[Android's external/ libraries: hunting n-days in code that upstream already
+fixed](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387)
+(Medium · [Habr RU](https://habr.com/ru/sandbox/308772/))
+
 ```
 Coverage on instrumented surfaces (8-bit counters, live):
   heif_meta  ████████████████████ 31 351
@@ -82,6 +87,9 @@ events.** The corpus index is append-only and every entry reproduces.
 
 - `TITLE.md` — formal write-up
 - `MANIFEST.sha256` — authorship manifest (SHA-256 of all sources)
+- `BLOGPOST.md` — the writeup, published on
+  [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387)
+  and [Habr](https://habr.com/ru/sandbox/308772/)
 - `deploy/` — complete deployment tree; a second node stands up in minutes
 
 ---
