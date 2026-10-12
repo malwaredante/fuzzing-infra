@@ -1,13 +1,18 @@
 # Vladimir Garenitsa
-### `MalwareDante` · vulnerability research engineer · Russia
+### `MalwareDante` — vulnerability research engineer
 
-I build and run offensive-research infrastructure: coverage-guided fuzzing,
-sanitizer engineering, and vendor-divergence analysis of the code Android
-actually ships.
+Independent researcher. The work below ran privately for a while —
+as of October 2026 it's public: platform, methodology, findings, writeups.
+
+My ground rule: **no claim without an artifact.** Every bug has a reproducer,
+every number is pullable from the repo, every report exists upstream.
 
 ---
 
-### Running now — an autonomous fuzzing platform built solo, end to end
+### The platform — built solo, end to end
+
+An autonomous fuzzing operation for media-parsing code, running unattended
+on commodity hardware:
 
 ```
  targets            12 libFuzzer harnesses + AFL++ CmpLog + guided MSan
@@ -15,30 +20,29 @@ actually ships.
  operations         4 systemd scopes, CPU quotas, watchdog restarts
  refresh            daily git pull → rebuild → relaunch (bleeding edge)
  coverage           ~30k 8-bit counters on primary heif surfaces
+ triage             stack-signature dedup, append-only crash index
 ```
 
 → **[fuzzing-infra](https://github.com/malwaredante/fuzzing-infra)** — full
 source, harnesses, methodology, findings log.
 
-### Research focus
+### What I hunt
 
-- **Media parsers & codec stacks** — HEIF/HEIC, H.265, AV1, FLAC, JPEG,
-  PNG, WebP, EXIF, MIDI/synth formats
-- **AOSP vendor divergence** — fuzzing `external/` forks (libexif 0.6.21 →
-  2015 baseline, FLAC 1.4.3 vs 1.5.0) where upstream fixes never landed
+- **AOSP vendor divergence** — `external/` forks where upstream fixes
+  never landed (libexif frozen at 0.6.21/2015, FLAC 1.4.3 vs 1.5.0)
 - **The write path** — decode→re-encode→serialize→reparse round-trips;
   the least-exercised code in mature media libraries
-- **MSan hunting** — full dependency trees under `-fsanitize=memory`;
-  the bug class most setups can't see
-- **Corpus engineering** — conformance suites, structure-aware mutators,
-  realloc-forcing seed generation
-- **Fuzzing infrastructure** — autonomous fleets on minimal hardware:
-  systemd orchestration, build pipelines, crash triage at scale
+- **MSan-class bugs** — full dependency trees under `-fsanitize=memory`;
+  the bugs most setups physically cannot see
+- **Fresh upstream surface** — sequences/track API, new codec paths,
+  code that is hours-to-days old
 
-### Queued for divergence analysis
+### Surfaces
 
-`external/libpng` · `external/jpeg-turbo` · `external/zlib` —
-same playbook: diff shipped-vs-upstream, stand up harnesses, fuzz the gap.
+Media parsers & codec stacks: HEIF/HEIC · H.265 · AV1 · FLAC · JPEG ·
+PNG · WebP · EXIF · MIDI/synth.
+Queued for divergence analysis: `external/libpng` · `external/jpeg-turbo` ·
+`external/zlib`.
 
 ### Reported upstream
 
@@ -60,5 +64,7 @@ AOSP build internals · Git
 
 ---
 
-*Open to vulnerability research / product security roles — remote or US.*
-*Every artifact in my repos reproduces; every claim is verifiable.*
+*Open to vulnerability research / product security roles — remote.*
+*Available for interviews and podcasts on fuzzing methodology, AOSP attack
+surface, and research infrastructure on a budget — reach me via GitHub or
+malwaredante@proton.me.*
