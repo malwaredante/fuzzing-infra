@@ -1,74 +1,68 @@
 # Vladimir Garenitsa
-### `MalwareDante` — vulnerability research engineer
+### `MalwareDante` — vulnerability research
 
-I don't publish origin stories; I publish results. What ran before this page
-existed was mine to keep — what appears here, I've decided is ready to be
-seen. October 2026: the platform, the methodology, and the findings worth
-showing.
+Independent. Public since October 2026. Prior history: not for a README.
 
-There's more behind it — there usually is, when the work is real. It will
-surface in its own time, or in the right conversation.
+This page carries what I've decided to release. The rest — the queue, the
+scoring model, the undisclosed entries in the index — remains off the record.
 
 **Rule:** no claim without an artifact. Everything stated reproduces.
 
 ---
 
-### The platform — built solo, end to end
+## Operations
 
 ```
- targets            12 libFuzzer harnesses + AFL++ CmpLog + guided MSan
- sanitizers         ASan · UBSan · MSan — three bug classes in parallel
- operations         4 systemd scopes, CPU quotas, watchdog restarts
- refresh            daily git pull → rebuild → relaunch (bleeding edge)
- coverage           ~30k 8-bit counters on primary heif surfaces
- triage             stack-signature dedup, append-only crash index
+ fleet        12 libFuzzer harnesses · AFL++ CmpLog · guided MSan scope
+ lineages     release · git-master (daily rebuild) · AOSP vendor forks
+ sanitizers   ASan+UBSan everywhere · -fsanitize=memory on a full
+              instrumented dependency tree
+ scheduling   systemd scopes, cgroup CPU quotas 140/40/20/20, two cores
+ refresh      timer-driven git pull → incremental build → relaunch
+ triage       normalized stack signatures → dedup buckets →
+              append-only index · timeouts replayed as a separate class
+ telemetry    per-target 8-bit counters, 60s cadence
+ uptime       self-healing; survives SSH drops, fuzzer exits, scope death
 ```
 
-→ **[fuzzing-infra](https://github.com/malwaredante/fuzzing-infra)** — full
-source, harnesses, methodology, findings log.
+→ **[fuzzing-infra](https://github.com/malwaredante/fuzzing-infra)** —
+source, harnesses, methodology.
 
-### What I hunt — the public version
+## Technique
 
-- **AOSP vendor divergence** — `external/` forks where upstream fixes
-  never landed (libexif frozen at 0.6.21/2015, FLAC 1.4.3 vs 1.5.0).
-  I've measured more libraries than I've named.
-- **The write path** — decode→re-encode→serialize→reparse round-trips;
-  the least-exercised code in mature media libraries.
-- **MSan-class bugs** — the bug class most setups physically cannot see.
-  There is a second reason I run MSan; it stays mine for now.
-- **Fresh upstream surface** — the window between commit and coverage.
+- **AOSP standalone builds** — `external/` forks compiled off-tree via a
+  stub layer for the Android build environment (`log/log.h`, `cutils`,
+  media interfaces, `errorWriteLog`); source lists and cflags lifted from
+  `Android.bp`. The exact bytes devices ship — under sanitizers.
+- **Divergence measurement** — shipped-vs-upstream diffs across `external/`:
+  libexif pinned at 0.6.21 (2015 baseline), FLAC 1.4.3 vs 1.5.0
+  parser-hardening delta. Measured on more libraries than listed here.
+- **Write-path fuzzing** — HEIF decode → x265 re-encode → box
+  serialization → reparse → decode. The least-exercised machinery in
+  mature libraries.
+- **Corpus engineering** — conformance vectors, upstream regression
+  inputs, a structure-aware HEIF box mutator, frame-splice seeds that
+  force `allocate_output_` realloc transitions in the FLAC decoder.
+- **Signature-dedup triage** — 778 artifacts → 97 signatures; findings
+  classified by reachability and re-confirmed under MSan where it matters.
 
-### Surfaces
-
-HEIF/HEIC · H.265 · AV1 · FLAC · JPEG · PNG · WebP · EXIF · MIDI/synth.
-Queued for divergence analysis: `external/libpng` · `external/jpeg-turbo` ·
-`external/zlib`. Among others.
-
-### Reported upstream
+## Reported upstream
 
 | Where | What | Status |
 |---|---|---|
-| [strukturag/libde265#546](https://github.com/strukturag/libde265/issues/546) | attacker-controlled invalid enum load in SEI `decoded_picture_hash` | open · live in 1.1.2 & master · PoC attached |
+| [strukturag/libde265#546](https://github.com/strukturag/libde265/issues/546) | attacker-controlled invalid enum load, SEI `decoded_picture_hash` | open · live in 1.1.2 & master · PoC attached |
 
-*One report made public so far. The index holds more — timing, mostly.*
+*Public count: one. Index count: higher. Timing is a choice.*
 
-### Writing & interviews
+## Writing & interviews
 
 - [Android's `external/` libraries: hunting n-days in code that upstream
   already fixed](https://dev.to/malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-159l) — dev.to ·
   [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387)
 - [Interview Q&A](https://github.com/malwaredante/fuzzing-infra/blob/main/INTERVIEW_QA.md) ·
-  [RU version](https://github.com/malwaredante/fuzzing-infra/blob/main/INTERVIEW_QA_ru.md)
-
-### Stack
-
-C/C++ · Python · Bash · libFuzzer · AFL++ (CmpLog) · SanitizerCoverage ·
-ASan/UBSan/MSan · Linux/systemd/cgroups · CMake/Ninja/Meson ·
-AOSP build internals · Git
+  [RU](https://github.com/malwaredante/fuzzing-infra/blob/main/INTERVIEW_QA_ru.md)
 
 ---
 
-*Open to vulnerability research / product security — remote.
-If something here raises a question, the honest version of the answer is a
-conversation: malwaredante@proton.me, or a GitHub issue. I answer serious
-inquiries personally.*
+*Vulnerability research / product security — remote.
+Serious inquiries get personal answers: malwaredante@proton.me.*
