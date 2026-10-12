@@ -40,9 +40,9 @@ source, harnesses, methodology, findings log.
 ### Writing
 
 - [Android's `external/` libraries: hunting n-days in code that upstream
-  already fixed](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387) — Medium
-- Same writeup in Russian on [Habr](https://habr.com/ru/sandbox/308772/)
-  (in moderation)
+  already fixed](https://dev.to/malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-159l) — dev.to ·
+  [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387) ·
+  [Habr RU](https://habr.com/ru/sandbox/308772/) (in moderation)
 
 ### Stack
 
