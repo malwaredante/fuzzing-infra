@@ -11,8 +11,7 @@ VPS hardware.
 **The story behind it:**
 [Android's external/ libraries: hunting n-days in code that upstream already
 fixed](https://dev.to/malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-159l)
-(dev.to · [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387) ·
-[Habr RU](https://habr.com/ru/sandbox/308772/))
+(dev.to · [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387))
 
 ```
 Coverage on instrumented surfaces (8-bit counters, live):
@@ -89,9 +88,8 @@ events.** The corpus index is append-only and every entry reproduces.
 - `TITLE.md` — formal write-up
 - `MANIFEST.sha256` — authorship manifest (SHA-256 of all sources)
 - `BLOGPOST.md` — the writeup, published on
-  [dev.to](https://dev.to/malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-159l),
-  [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387)
-  and [Habr](https://habr.com/ru/sandbox/308772/)
+  [dev.to](https://dev.to/malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-159l)
+  and [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387)
 - `deploy/` — complete deployment tree; a second node stands up in minutes
 
 ---

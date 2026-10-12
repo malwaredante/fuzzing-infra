@@ -1,5 +1,5 @@
 # Vladimir Garenitsa
-### `MalwareDante` · vulnerability research engineer · United States
+### `MalwareDante` · vulnerability research engineer · Russia
 
 I build and run offensive-research infrastructure: coverage-guided fuzzing,
 sanitizer engineering, and vendor-divergence analysis of the code Android
@@ -22,6 +22,8 @@ source, harnesses, methodology, findings log.
 
 ### Research focus
 
+- **Media parsers & codec stacks** — HEIF/HEIC, H.265, AV1, FLAC, JPEG,
+  PNG, WebP, EXIF, MIDI/synth formats
 - **AOSP vendor divergence** — fuzzing `external/` forks (libexif 0.6.21 →
   2015 baseline, FLAC 1.4.3 vs 1.5.0) where upstream fixes never landed
 - **The write path** — decode→re-encode→serialize→reparse round-trips;
@@ -30,6 +32,13 @@ source, harnesses, methodology, findings log.
   the bug class most setups can't see
 - **Corpus engineering** — conformance suites, structure-aware mutators,
   realloc-forcing seed generation
+- **Fuzzing infrastructure** — autonomous fleets on minimal hardware:
+  systemd orchestration, build pipelines, crash triage at scale
+
+### Queued for divergence analysis
+
+`external/libpng` · `external/jpeg-turbo` · `external/zlib` —
+same playbook: diff shipped-vs-upstream, stand up harnesses, fuzz the gap.
 
 ### Reported upstream
 
@@ -41,8 +50,7 @@ source, harnesses, methodology, findings log.
 
 - [Android's `external/` libraries: hunting n-days in code that upstream
   already fixed](https://dev.to/malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-159l) — dev.to ·
-  [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387) ·
-  [Habr RU](https://habr.com/ru/sandbox/308772/) (in moderation)
+  [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387)
 
 ### Stack
 
