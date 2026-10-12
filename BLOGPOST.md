@@ -71,6 +71,12 @@ weeks. But the setup is built so that when it does come, I'll be the one who
 finds it: because I was fuzzing the fork nobody else looks at, on the path
 nobody exercises, under the sanitizer nobody bothers to build.
 
+This is the first post in what I intend to be a series. The platform keeps
+expanding — more AOSP forks are queued for divergence analysis, and every
+finding will get the same treatment: reproducer, sanitizer trace, upstream
+report, writeup. If this kind of work is what you do — or what you hire for —
+I'd like to hear from you.
+
 **Source, harnesses and methodology:**
 [github.com/malwaredante/fuzzing-infra](https://github.com/malwaredante/fuzzing-infra)
 
