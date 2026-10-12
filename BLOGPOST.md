@@ -9,10 +9,10 @@
 
 > By Vladimir Garenitsa / MalwareDante
 
-I'm not a security researcher by title. This started as a spare-time project on
-the cheapest VPS I could find — 2 cores, a few gigs of RAM. I mostly wanted to
-know whether one person can still find bugs in code that Google's OSS-Fuzz
-cluster has been chewing on for years, 24/7, with thousands of cores.
+I'm an independent vulnerability researcher. This started as a spare-time
+project on the cheapest VPS I could find — 2 cores, a few gigs of RAM. I
+wanted to know whether one person can still find bugs in code that Google's
+OSS-Fuzz cluster has been chewing on for years, 24/7, with thousands of cores.
 
 Short answer: not by competing with it. If you run the same fuzzers on the same
 code, you lose by definition. So after the first weeks produced nothing but
