@@ -1,15 +1,13 @@
 # Vladimir Garenitsa
 ### `MalwareDante` — vulnerability research engineer
 
-I don't do origin stories in READMEs. What I did before going public is a
-conversation, not a landing page — ask me directly and you'll get a straight
-answer. What I'll say here: the work below ran privately, on my own
-infrastructure, on my own time — and as of October 2026, part of it is
-public. The platform, the methodology, the findings I've chosen to show.
+I don't publish origin stories; I publish results. What ran before this page
+existed was mine to keep — what appears here, I've decided is ready to be
+seen. October 2026: the platform, the methodology, and the findings worth
+showing.
 
-What you see is the floor, not the ceiling. The scoring model, the mutator
-internals, and the unannounced part of the queue stay with me — that's not
-mystique, that's pricing.
+There's more behind it — there usually is, when the work is real. It will
+surface in its own time, or in the right conversation.
 
 **Rule:** no claim without an artifact. Everything stated reproduces.
 
@@ -37,14 +35,14 @@ source, harnesses, methodology, findings log.
 - **The write path** — decode→re-encode→serialize→reparse round-trips;
   the least-exercised code in mature media libraries.
 - **MSan-class bugs** — the bug class most setups physically cannot see.
-  There's a second reason I run MSan. That one stays private.
+  There is a second reason I run MSan; it stays mine for now.
 - **Fresh upstream surface** — the window between commit and coverage.
 
 ### Surfaces
 
 HEIF/HEIC · H.265 · AV1 · FLAC · JPEG · PNG · WebP · EXIF · MIDI/synth.
 Queued for divergence analysis: `external/libpng` · `external/jpeg-turbo` ·
-`external/zlib`. And a few I haven't announced.
+`external/zlib`. Among others.
 
 ### Reported upstream
 
@@ -52,7 +50,7 @@ Queued for divergence analysis: `external/libpng` · `external/jpeg-turbo` ·
 |---|---|---|
 | [strukturag/libde265#546](https://github.com/strukturag/libde265/issues/546) | attacker-controlled invalid enum load in SEI `decoded_picture_hash` | open · live in 1.1.2 & master · PoC attached |
 
-*One report public. The index holds more — the rest is timing.*
+*One report made public so far. The index holds more — timing, mostly.*
 
 ### Writing & interviews
 
@@ -70,8 +68,7 @@ AOSP build internals · Git
 
 ---
 
-*Open to vulnerability research / product security roles — remote.
-This page is the audition, not the inventory. The unpublished parts —
-the queue, the thresholds, the second metric — come with the hire, not
-with the browse. For interviews, collaborations, or the direct version of
-"what else do you have": malwaredante@proton.me or a GitHub issue.*
+*Open to vulnerability research / product security — remote.
+If something here raises a question, the honest version of the answer is a
+conversation: malwaredante@proton.me, or a GitHub issue. I answer serious
+inquiries personally.*
