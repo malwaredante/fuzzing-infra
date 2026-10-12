@@ -5,65 +5,71 @@
 
 *(Alternative: "I built a fuzzing platform on a 2-core VPS. Here's what actually works for solo vuln research")*
 
-## Draft text
+## Draft text (v2 — human voice)
 
 > By Vladimir Garenitsa / MalwareDante
 
-Everyone hunting memory-corruption bugs in open-source media libraries
-competes with Google's OSS-Fuzz — a cluster running the same fuzzers on the
-same code, 24/7. On a 2-core VPS you lose that race by definition.
+I'm not a security researcher by title. This started as a spare-time project on
+the cheapest VPS I could find — 2 cores, a few gigs of RAM. I mostly wanted to
+know whether one person can still find bugs in code that Google's OSS-Fuzz
+cluster has been chewing on for years, 24/7, with thousands of cores.
 
-So I stopped racing and changed the question: **not "how do I fuzz more", but
-"what does nobody fuzz?"**
+Short answer: not by competing with it. If you run the same fuzzers on the same
+code, you lose by definition. So after the first weeks produced nothing but
+timeout noise, I stopped and asked a different question — what does nobody
+fuzz at all?
 
-### Three surfaces that aren't crowded
+Turns out, quite a lot.
 
-**1. Vendor forks, not upstream.**
-AOSP ships vendored copies of parsing libraries under `external/` — and they
-lag upstream, sometimes catastrophically:
+**Vendor forks.** AOSP doesn't link upstream libraries; it ships its own copies
+under `external/`, and some of them are ancient. `external/libexif` is 0.6.21,
+last upgraded in June 2015. Google cherry-picks the CVE fixes, sure — but
+eleven years of general hardening and parser rewrites never made it in.
+`external/flac` is 1.4.3 while upstream is at 1.5.0, and the diff between them
+includes real security work: overflow checks in residual decoding, metadata
+over-read guards. So I fuzz the shipped code, not upstream. If something falls
+out of that, it's not a hypothetical bug — it's an n-day on every Android
+device that ever parses the format.
 
-- `external/libexif` is **0.6.21 — last upgraded June 2015**. Eleven years of
-  upstream fixes never merged (though Google cherry-picks CVE fixes — the
-  hot paths are patched; the rest is a gray zone).
-- `external/flac` is **1.4.3 vs upstream 1.5.0**, which includes real
-  parser-hardening: residual-in-32-bit-overflow checks, metadata
-  over-read/allocation guards. Those checks do not exist in shipped code.
+**The write path.** Almost every media fuzzer on the planet does the same
+thing: feed garbage into a decoder. I spent some effort on the opposite —
+decode a HEIF file, re-encode the pixels through x265, serialize the boxes
+back out, reparse the result, decode again. That round-trip exercises box
+writers, CRC builders, metadata serialization — code that sees a tenth of the
+coverage decoders get. On a mature library the write path is usually the least
+exercised part of the tree, which is exactly where you want to be.
 
-If you fuzz the *shipped* version instead of upstream, you hunt in
-pre-mapped territory — and a hit is an **n-day on every Android device**.
+**MemorySanitizer.** Everyone runs ASan+UBSan because they're easy. MSan is
+not easy — you have to rebuild your whole dependency tree under
+`-fsanitize=memory`, and half the time it doesn't work until you fix some
+unrelated init bug in a dependency. Which is precisely why almost nobody runs
+it, and why uninitialized-memory bugs sit there unclaimed. It took me two days
+of swearing at build scripts to get an MSan scope running. Worth it.
 
-**2. The write path.**
-Nearly every media-fuzzer feeds files into decoders. Almost nobody fuzzes
-**encode→serialize→reparse** loops — yet that path touches different
-machinery (box writers, CRC builders, metadata serialization). I built a
-round-trip harness (decode HEIF → re-encode via x265 → write → reparse →
-decode). On a mature decoder, the write path is the least-exercised code in
-the tree.
+A few words on the platform itself, since that's honestly the thing I'm
+proudest of. It's 12 libFuzzer targets plus an AFL++ CmpLog instance plus the
+MSan scope, all packed into `systemd-run` cgroups with CPU quotas so they can
+share two cores without starving each other. A systemd timer pulls upstream
+master every day, does an incremental rebuild, and relaunches — so commits
+that landed in libheif this morning get fuzzed tonight, long before OSS-Fuzz's
+schedule touches them. Crash triage is automatic (stack-signature dedup into
+an append-only index), telemetry runs every minute, and a watchdog restarts
+whatever dies. I check in twice a day over coffee. The fleet runs itself.
 
-**3. Sanitizer classes people skip.**
-Everyone runs ASan+UBSan. Fewer run **MemorySanitizer** — it requires
-building the entire dependency tree under `-fsanitize=memory`, which is
-tedious, so coverage stays thin. UMR-class bugs hide precisely there.
+Now the part most blog posts would inflate, so I'll just state it plainly.
+778 triaged artifacts so far, 97 unique signatures — all of them UB-class
+(undefined behavior, invalid enums, bad shifts). Zero memory corruption *yet*.
+One real bug reported upstream: **[libde265#546](https://github.com/strukturag/libde265/issues/546)** —
+an attacker-controlled byte in an SEI `decoded_picture_hash` message that
+loads an invalid enum value, reproducible on release 1.1.2 and current master.
+Not a headline, but it's a documented, unfixed issue with a PoC attached, and
+it's mine.
 
-### The platform
-
-- 12 libFuzzer targets + AFL++ CmpLog + guided MSan, in `systemd-run` scopes
-  with CPU quotas (a 2-core VPS shares it fine)
-- Daily `git pull → incremental rebuild → relaunch` via systemd timer —
-  "bleeding edge" commits get fuzzed hours after landing
-- Automated triage: stack-signature dedup, append-only crash index, 1-minute
-  telemetry, watchdog restarts. I check in twice a day; the fleet runs itself.
-
-### Honest results (as of writing)
-
-778 triaged artifacts, 97 signatures — all UB-class, zero memory corruption
-*so far*. One real unfixed bug reported upstream:
-**[libde265#546](https://github.com/strukturag/libde265/issues/546)** —
-attacker-controlled invalid enum load in SEI `decoded_picture_hash`, live in
-release 1.1.2 and git master.
-
-The honest pitch: solo fuzzing won't out-muscle OSS-Fuzz, but it can
-out-*position* it. The edge isn't compute — it's surface selection.
+I have no idea when the first real crash comes. That's the honest part of
+fuzzing nobody puts in writeups — you can do everything right and still wait
+weeks. But the setup is built so that when it does come, I'll be the one who
+finds it: because I was fuzzing the fork nobody else looks at, on the path
+nobody exercises, under the sanitizer nobody bothers to build.
 
 **Source, harnesses and methodology:**
 [github.com/malwaredante/fuzzing-infra](https://github.com/malwaredante/fuzzing-infra)
