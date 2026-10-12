@@ -62,7 +62,7 @@ discipline industrial fuzzing teams apply internally:
 | ID | Component | Root cause | Status |
 |----|-----------|------------|--------|
 | F-001 | libheif `bitstream.cc:115` | memcpy(NULL,0) via `Box_mini→Box_av1C` empty OBU vector | fixed upstream — full pipeline validation |
-| F-002 | libde265 `sei.cc:45,70,78` | attacker byte → invalid `hash_type` enum, **unfixed in 1.1.2 and git master** | PoC reproducer, report-ready |
+| F-002 | libde265 `sei.cc:45,70,78` | attacker byte → invalid `hash_type` enum, **unfixed in 1.1.2 and git master** | **reported upstream:** [strukturag/libde265#546](https://github.com/strukturag/libde265/issues/546) |
 | — | libexif `exif-utils.c:137` | signed 24-bit shift on tainted byte | suppressed after classification |
 
 **778 deduplicated artifacts · 97 stack signatures · 0 false-positive ASan
