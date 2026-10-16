@@ -13,6 +13,13 @@ VPS hardware.
 fixed](https://dev.to/malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-159l)
 (dev.to · [Medium](https://medium.com/@malwaredante/androids-external-libraries-hunting-n-days-in-code-that-upstream-already-fixed-243e1791a387))
 
+**Postmortem:**
+[The Illusion of Progress: how a typo in my custom mutator sent my fuzzer
+into the wrong parser](https://dev.to/malwaredante/the-illusion-of-progress-how-a-typo-in-my-custom-mutator-sent-my-fuzzer-into-the-wrong-parser-435j)
+(dev.to ·
+[Medium](https://medium.com/@malwaredante/the-illusion-of-progress-how-a-typo-in-my-custom-mutator-sent-my-fuzzer-into-the-wrong-parser-222c16b1cbc7) ·
+[Хабр](https://habr.com/ru/sandbox/309628/))
+
 ```
 Coverage on instrumented surfaces (8-bit counters, live):
   heif_meta  ████████████████████ 31 351
