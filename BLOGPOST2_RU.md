@@ -150,3 +150,12 @@ kTTs[3] = ...;   // ой. это чужой транспортный форма�
 ---
 
 *Таргет, инфраструктура и приоритизация намеренно за кадром — переносимы техники, а не детали. Если появится что подтверждать — через ответственное раскрытие.*
+
+
+---
+
+## Публикации
+
+- **DEV.to (EN):** https://dev.to/malwaredante/the-illusion-of-progress-how-a-typo-in-my-custom-mutator-sent-my-fuzzer-into-the-wrong-parser-435j
+- **Medium (EN):** https://medium.com/@malwaredante/the-illusion-of-progress-how-a-typo-in-my-custom-mutator-sent-my-fuzzer-into-the-wrong-parser-222c16b1cbc7
+- **Habr (RU):** https://habr.com/ru/sandbox/309628/
